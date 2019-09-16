@@ -67,8 +67,8 @@ $installCmd     = Get-AzureDevOpsAgentInstallParameters `
 
 # Install the Deployment Agent
 & cmd.exe /c """C:\agent\config.cmd $installCmd""" 2>%1
-# Start the Deployment Agent in Background
-Start-Job { & cmd.exe /c """C:\agent\run.cmd""" }
+# Start the Deployment Agent
+& cmd.exe /c """C:\agent\run.cmd"""
 ```
 
 ## Install Deployment Agent in NAV-/BC-Docker Container

@@ -24,7 +24,7 @@ $pools          = (Get-AzureDevOpsAgentPools -organizationUri $devOpsURL -vstsTo
 $pool           = ($pools | Where-Object { $_.name -eq $poolName } | Select-Object -First 1)
 
 if (! $pool) {
-    $pool = (Add-AzureDevOpsAgentPool -name $poolName -organizationUri $devOpsURL -vstsToken $vstsToken).pool
+    $pool = (Add-AzureDevOpsAgentPool -name $poolName -organizationUri $devOpsURL -vstsToken $vstsToken)
 }
 ```
 
@@ -62,8 +62,8 @@ $installCmd     = Get-AzureDevOpsAgentInstallParameters `
 
 # Install the Agent
 & cmd.exe /c """C:\agent\config.cmd $installCmd""" 2>%1
-# Start the Deployment Agent in Background
-Start-Job { & cmd.exe /c """C:\agent\run.cmd""" }
+# Start the Deployment Agent
+& cmd.exe /c """C:\agent\run.cmd"""
 ```
 
 ## Install Build Agent in NAV-/BC-Docker Container
