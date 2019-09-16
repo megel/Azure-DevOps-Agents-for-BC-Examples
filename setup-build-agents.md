@@ -47,7 +47,7 @@ $agentFile      = "$($env:TEMP)/agent.zip"
 $agentName      = $env:COMPUTERNAME
 
 Write-Host "Download VSTS-Agent"
-Invoke-WebRequest -Uri "$buildAgentUrl" -OutFile "$agentFile"
+Invoke-WebRequest -Uri "$agentURL" -OutFile "$agentFile"
 
 Write-Host "Extract VSTS-Agent"
 Expand-Archive $agentFile "C:/agent"
