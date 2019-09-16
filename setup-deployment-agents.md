@@ -1,4 +1,4 @@
-# Setup Build-Agents
+# Setup Deployment-Agents
 
 ## Prerequisites
 
@@ -11,24 +11,25 @@ Update-Module  AzuredevOpsAPIUtils
 Import-Module  AzuredevOpsAPIUtils -Force
 ```
 
-## Create Azure DevOps Agent Pool
+## Create Azure DevOps Deployment Pool
 
-Create an Azure DevOps [Agent Pool](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops) for your organization with PowerShell:
+Create an Azure DevOps [Deployment Pool](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/?view=azure-devops) for your organization with PowerShell:
 
 ```PowerShell
 $poolName       = "<POOL-NAME>"
 $devOpsURL      = "https://dev.azure.com/<YOUR-ORGANIZATION>"
+$projectName    = "<PROJECT-NAME>"
 $vstsToken      = "<YOUR-VSTS-TOKEN>"
 
-$pools          = (Get-AzureDevOpsAgentPools -organizationUri $devOpsURL -vstsToken $vstsToken)
-$pool           = ($pools | Where-Object { $_.name -eq $poolName } | Select-Object -First 1)
+$pools          = (Get-AzureDevOpsDeploymentGroups -projectName $projectName -organizationUri $devOpsURL -vstsToken $vstsToken)
+$pool           = ($pools | Where-Object { $_.name -eq $poolName -or ($_.pool -and $_.pool.name -eq "$projectName-$poolName") } | Select-Object -First 1).pool
 
 if (! $pool) {
-    $pool = (Add-AzureDevOpsAgentPool -name $poolName -organizationUri $devOpsURL -vstsToken $vstsToken).pool
+    $pool = (Add-AzureDevOpsDeploymentGroup -name $poolName -projectName $projectName -organizationUri $devOpsURL -vstsToken $vstsToken).pool
 }
 ```
 
-## Install Local Build Agent
+## Install Local Deployment Agent
 
 Download, Install, and Run a [Self Hosted Agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-windows?view=azure-devops) with PowerShell:
 
@@ -36,7 +37,9 @@ Download, Install, and Run a [Self Hosted Agent](https://docs.microsoft.com/en-u
 # 1) replace placeholders in these variables:
 $poolName       = "<POOL-NAME>"
 $devOpsURL      = "https://dev.azure.com/<YOUR-ORGANIZATION>"
+$projectName    = "<PROJECT-NAME>"
 $vstsToken      = "<YOUR-VSTS-TOKEN>"
+$tags           = @()    # List of Tags to identify the deployment agent
 $credential     = $null  # or ... ([PSCredential]::new("username", (ConvertTo-SecureString -String "password" -AsPlainText -Force)))
 
 # 2) Ensure, you download the newest Agent
@@ -53,20 +56,22 @@ Write-Host "Extract VSTS-Agent"
 Expand-Archive $agentFile "C:/agent"
 
 $installCmd     = Get-AzureDevOpsAgentInstallParameters `
-                        -poolName        $poolName `
-                        -organizationUri $devOpsURL `
-                        -vstsToken       $vstsToken `
-                        -agentName       $agentName `
-                        -credential      $credential `
+                        -deploymentGroup     $poolName `
+                        -deploymentGroupTags $tags `
+                        -projectName         $projectName `
+                        -organizationUri     $devOpsURL `
+                        -vstsToken           $vstsToken `
+                        -agentName           $agentName `
+                        -credential          $credential `
                         -runAsService:($credential -ne $null)
 
-# Install the Agent
+# Install the Deployment Agent
 & cmd.exe /c """C:\agent\config.cmd $installCmd""" 2>%1
 # Start the Deployment Agent in Background
 Start-Job { & cmd.exe /c """C:\agent\run.cmd""" }
 ```
 
-## Install Build Agent in NAV-/BC-Docker Container
+## Install Deployment Agent in NAV-/BC-Docker Container
 
 To create the docker container use [NavContainerHelper](https://www.powershellgallery.com/packages/navcontainerhelper/) (see also [Freddy's Blog](https://freddysblog.com/category/navcontainerhelper/))
 
@@ -77,6 +82,9 @@ Download, Install, and Run a [Self Hosted Agent](https://docs.microsoft.com/en-u
 $containerName  = "<container-name>" # your BC container
 $poolName       = "<POOL-NAME>"
 $devOpsURL      = "https://dev.azure.com/<YOUR-ORGANIZATION>"
+$projectName    = "<PROJECT-NAME>"
+$vstsToken      = "<YOUR-VSTS-TOKEN>"
+$tags           = @()    # List of Tags to identify the deployment agent
 $vstsToken      = "<YOUR-VSTS-TOKEN>"
 $credential     = ([PSCredential]::new("<docker-username>", (ConvertTo-SecureString -String "<docker-password>" -AsPlainText -Force)))
 
@@ -86,11 +94,13 @@ $agentURL       = "https://vstsagentpackage.azureedge.net/agent/2.155.1/vsts-age
 # 3) Prepare variables for execution
 $agentName      = $containerName
 $installCmd     = Get-AzureDevOpsAgentInstallParameters `
-                        -poolName        $poolName `
-                        -organizationUri $devOpsURL `
-                        -vstsToken       $vstsToken `
-                        -agentName       $agentName `
-                        -credential      $credential `
+                        -deploymentGroup     $poolName `
+                        -deploymentGroupTags $tags `
+                        -projectName         $projectName `
+                        -organizationUri     $devOpsURL `
+                        -vstsToken           $vstsToken `
+                        -agentName           $agentName `
+                        -credential          $credential `
                         -runAsService:($credential -ne $null)
 $uninstallCmd   = Get-AzureDevOpsAgentUnInstallParameters -vstsToken $vstsToken
 
