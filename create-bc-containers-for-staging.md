@@ -1,6 +1,10 @@
 # Create BC-DockerContainer for Staging Simulation
 
 ```PowerShell
+Install-Module AzuredevOpsAPIUtils -Force
+Update-Module  AzuredevOpsAPIUtils
+Import-Module  AzuredevOpsAPIUtils -Force
+
 $stages         = @(
     "build-nst"  # Build Agent
     "d-stage"    # Development
@@ -10,7 +14,14 @@ $stages         = @(
     "unit-test"  # Test-Automation
 )
 
-# 1) Update Common Information used for BC-DockerContainer
+# 1) DevOps
+$devOpsURL       = "https://dev.azure.com/<YOUR-ORGANIZATION>"
+$vstsToken       = "<YOUR-VSTS-TOKEN>"
+$projectName     = "<PROJECT-NAME>"
+#    Ensure, you download the newest Agent
+$agentURL        = "https://vstsagentpackage.azureedge.net/agent/2.155.1/vsts-agent-win-x64-2.155.1.zip"
+
+# 2) Update Common Information used for BC-DockerContainer
 $imageName       = "mcr.microsoft.com/businesscentral/onprem:w1"
 $shortcuts       = "Desktop"
 $devLicenseFile  = ""  # Add the URL to your DEV License File
@@ -18,7 +29,7 @@ $custLicenseFile = ""  # Add the URL to your CUSTOMER License File
 # Credential for the container
 $credential      = ([PSCredential]::new("username", (ConvertTo-SecureString -String "password" -AsPlainText -Force)));
 
-# 2) Add/Update Stage-Specific information
+# 3) Add/Update Stage-Specific information
 $devOpsPools     = @{
     "build-nst" = "D365BC-NST";
     "d-stage"   = "d-stage";
@@ -37,7 +48,7 @@ $licenseFiles    = @{
 }
 $DeploymentPools = @("d-stage", "q-stage", "u-stage", "p-stage", "unit-test")
 
-# 3) Ensure, the pool is created for the Stage
+# 4) Ensure, the pool is created for the Stage
 $stages | ForEach-Object {
     $poolName       = $devOpsPools[$_]
 
@@ -60,7 +71,7 @@ $stages | ForEach-Object {
     }
 }
 
-# 4) Add / Update BC-DockerContainer parameter
+# 5) Add / Update BC-DockerContainer parameter
 $commonParameters      = @{
     "accept_eula"              = $true;
     "accept_outdated"          = $true;
@@ -123,9 +134,10 @@ foreach ($stage in $stages) {
                 Write-Host "Register VSTS-Agent"
                 & cmd.exe /c """C:\agent\config.cmd $installCmd""" 2>%1
 
-                Write-Host "Setup VSTS-Agent done." -f Green
-
                 Add-LocalGroupMember -Group Administrators -Member "Network Service" -ErrorAction SilentlyContinue
+                Restart-Service -Name "*vsts*" -ErrorAction SilentlyContinue
+
+                Write-Host "Setup VSTS-Agent done." -f Green
         } catch {
             Write-Warning "Install VSTS-Agent ERROR: $($_.Exception.Message)"
         }
