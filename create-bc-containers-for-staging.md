@@ -119,6 +119,8 @@ foreach ($stage in $stages) {
         Param($agentURL, $installCmd, $uninstallCmd, $poolName, $agentName)
 
         try {
+                Add-LocalGroupMember -Group Administrators -Member "Network Service" -ErrorAction SilentlyContinue
+
                 Write-Host "Setup VSTS-Agent $agentName for pool $poolName" -f Cyan
                 $agentFile = "C:/run/my/agent.zip"
                 Set-Location "C:/run/my"
@@ -133,9 +135,6 @@ foreach ($stage in $stages) {
                 & cmd.exe /c """C:\agent\config.cmd $uninstallCmd""" 2>%1
                 Write-Host "Register VSTS-Agent"
                 & cmd.exe /c """C:\agent\config.cmd $installCmd""" 2>%1
-
-                Add-LocalGroupMember -Group Administrators -Member "Network Service" -ErrorAction SilentlyContinue
-                Restart-Service -Name "*vsts*" -ErrorAction SilentlyContinue
 
                 Write-Host "Setup VSTS-Agent done." -f Green
         } catch {

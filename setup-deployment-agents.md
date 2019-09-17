@@ -109,6 +109,8 @@ Invoke-ScriptInNavContainer -containerName $containerName -scriptblock {
         Param($agentURL, $installCmd, $uninstallCmd, $poolName, $agentName)
 
     try {
+            Add-LocalGroupMember -Group Administrators -Member "Network Service" -ErrorAction SilentlyContinue
+
             Write-Host "Setup VSTS-Agent $agentName for pool $poolName" -f Cyan
             $agentFile = "C:/run/my/agent.zip"
             Set-Location "C:/run/my"
