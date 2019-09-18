@@ -52,7 +52,7 @@ $DeploymentPools = @("d-stage", "q-stage", "u-stage", "p-stage", "unit-test")
 $stages | ForEach-Object {
     $poolName       = $devOpsPools[$_]
 
-    if ($DeploymentPools.Contains($stage)) {
+    if ($DeploymentPools.Contains($_)) {
         # Deployment Agent Pool/Group
         $pools          = (Get-AzureDevOpsDeploymentGroups -projectName $projectName -organizationUri $devOpsURL -vstsToken $vstsToken)
         $pool           = ($pools | Where-Object { $_.name -eq $poolName -or ($_.pool -and $_.pool.name -eq "$projectName-$poolName") } | Select-Object -First 1).pool
