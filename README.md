@@ -13,11 +13,13 @@ Examples to simulate Staging Environments for D365BC with Docker Containers:
 
 1) [Create BC-DockerContainer for Staging Simulation](./create-bc-containers-for-staging.md)
 
-## Related Articles
+## Related Background Information
 
-1) [Part I - Artifacts & Deployment Stages](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-i-michael-megel/)
-1) [Part II - Deployment Flow & Triggers](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-ii-michael-megel/)
-1) [Part III - Build & Deployment Agents](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-iii-michael-megel/)
+Here are some articles related to these PS-Scripts:
+
+1) [Artifacts & Deployment Stages (Part I)](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-i-michael-megel/)
+1) [Deployment Flow & Triggers (Part II)](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-ii-michael-megel/)
+1) [Build & Deployment Agents (Part III)](https://www.linkedin.com/pulse/ci-cd-dynamics-365-business-central-part-iii-michael-megel/)
 
 ## Development Environment
 
