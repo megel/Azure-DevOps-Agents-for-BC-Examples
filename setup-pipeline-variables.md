@@ -3,12 +3,12 @@
 ## Prerequisites
 
 1) Get your [VSTS-Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops)
-1) Install [AzuredevOpsAPIUtils](https://www.powershellgallery.com/packages/AzureDevOpsAPIUtils) with PowerShell:
+1) Install [AzureDevOpsAPIUtils](https://www.powershellgallery.com/packages/AzureDevOpsAPIUtils) with PowerShell:
 
 ```PowerShell
-Install-Module AzuredevOpsAPIUtils -Force
-Update-Module  AzuredevOpsAPIUtils
-Import-Module  AzuredevOpsAPIUtils -Force
+Install-Module AzureDevOpsAPIUtils -Force
+Update-Module  AzureDevOpsAPIUtils
+Import-Module  AzureDevOpsAPIUtils -Force
 ```
 
 ## Create an Azure DevOps Variable Group
