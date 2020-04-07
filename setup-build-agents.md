@@ -47,6 +47,7 @@ $agentFile      = "$($env:TEMP)/agent.zip"
 $agentName      = $env:COMPUTERNAME
 
 Write-Host "Download VSTS-Agent"
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri "$agentURL" -OutFile "$agentFile"
 
 Write-Host "Extract VSTS-Agent"
@@ -106,6 +107,7 @@ Invoke-ScriptInNavContainer -containerName $containerName -scriptblock {
             Set-Location "C:/run/my"
 
             Write-Host "Download VSTS-Agent"
+            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
             Invoke-WebRequest -Uri "$agentURL" -OutFile "$agentFile"
 
             Write-Host "Extract VSTS-Agent"
