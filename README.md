@@ -51,6 +51,9 @@ choco upgrade -y azure-cli
 # Install Google Chrome
 choco install -y googlechrome
 choco upgrade -y googlechrome
+# Install Microsoft Edge
+choco install -y microsoft-edge
+choco upgrade -y microsoft-edge
 # Reload the PATH variable
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 # Install Azure CLI Extension for Azure-DevOps
